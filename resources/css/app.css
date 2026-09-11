@@ -4,6 +4,95 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Noto Sans Bengali', 'Hind Siliguri', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-brand-green: #067a3b;
+    --color-brand-red: #d71920;
+    --color-brand-dark: #171717;
+    --color-brand-light: #f7f7f7;
+}
+
+@layer base {
+    html {
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+        text-size-adjust: 100%;
+    }
+
+    body {
+        overflow-x: hidden;
+        background: #f7f7f7;
+        color: #171717;
+        font-family: 'Noto Sans Bengali', 'Hind Siliguri', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    a,
+    figcaption,
+    li {
+        overflow-wrap: anywhere;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+        outline: 3px solid #d71920;
+        outline-offset: 3px;
+    }
+}
+
+@layer components {
+    .public-container {
+        width: min(100% - 1.5rem, 1180px);
+        margin-inline: auto;
+    }
+
+    @media (min-width: 640px) {
+        .public-container {
+            width: min(100% - 2rem, 1180px);
+        }
+    }
+
+    .article-body > * + * {
+        margin-top: 1rem;
+    }
+
+    .article-body {
+        overflow-wrap: anywhere;
+    }
+
+    .article-body a {
+        color: #067a3b;
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 0.18em;
+    }
+
+    .article-body blockquote {
+        border-left: 4px solid #067a3b;
+        background: #f7f7f7;
+        padding: 1rem;
+        color: #404040;
+    }
+
+    .article-body ul,
+    .article-body ol {
+        padding-left: 1.5rem;
+    }
+
+    .article-body ul {
+        list-style: disc;
+    }
+
+    .article-body ol {
+        list-style: decimal;
+    }
 }
