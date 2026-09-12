@@ -90,6 +90,9 @@ class AuthorResource extends Resource
                     ->label('Phone')
                     ->tel()
                     ->maxLength(50),
+                TextInput::make('address')
+                    ->label('Address / District')
+                    ->maxLength(255),
                 TextInput::make('facebook_url')
                     ->label('Facebook URL')
                     ->url()
@@ -115,6 +118,22 @@ class AuthorResource extends Resource
                 Toggle::make('featured')
                     ->label('Featured')
                     ->default(false),
+                Select::make('organization_level')
+                    ->label('Organogram level')
+                    ->options([
+                        1 => 'Main person / Top',
+                        2 => 'Second in command',
+                        3 => 'Team member',
+                        4 => 'Blank / reserve slot',
+                    ])
+                    ->default(3)
+                    ->required()
+                    ->native(false),
+                TextInput::make('sort_order')
+                    ->label('Sort order')
+                    ->numeric()
+                    ->default(100)
+                    ->required(),
                 TextInput::make('seo_title')
                     ->label('SEO title')
                     ->maxLength(255),
@@ -149,6 +168,16 @@ class AuthorResource extends Resource
                     ->label('Designation')
                     ->searchable()
                     ->toggleable(),
+                TextColumn::make('address')
+                    ->label('Address')
+                    ->searchable()
+                    ->toggleable(),
+                TextColumn::make('organization_level')
+                    ->label('Level')
+                    ->sortable(),
+                TextColumn::make('sort_order')
+                    ->label('Order')
+                    ->sortable(),
                 TextColumn::make('user.name')
                     ->label('CMS user')
                     ->searchable()

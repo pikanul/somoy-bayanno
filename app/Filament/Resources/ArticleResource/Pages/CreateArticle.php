@@ -16,6 +16,8 @@ class CreateArticle extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        $data = ArticleResource::attachUploadedFeaturedPhoto($data);
+
         return app(ArticleAdministrationService::class)->create(Auth::user(), $data);
     }
 

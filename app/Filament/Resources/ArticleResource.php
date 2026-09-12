@@ -14,6 +14,7 @@ use App\Models\Tag;
 use App\Models\Topic;
 use App\Services\ArticleRevisionService;
 use App\Services\ArticleWorkflowService;
+use App\Services\MediaLibraryService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -21,6 +22,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -180,8 +182,16 @@ class ArticleResource extends Resource
                             ->searchable()
                             ->preload()
                             ->native(false),
+                        FileUpload::make('featured_media_upload')
+                            ->label('Upload featured photo')
+                            ->image()
+                            ->storeFiles(false)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/avif'])
+                            ->maxSize((int) ceil(config('media-library.max_bytes') / 1024))
+                            ->helperText('Upload a photo directly here, or choose existing media / paste a photo link below.')
+                            ->dehydrated(true),
                         TextInput::make('featured_image_url')
-                            ->label('External featured image')
+                            ->label('Photo link')
                             ->url()
                             ->maxLength(2048),
                         TextInput::make('image_caption')
@@ -191,7 +201,7 @@ class ArticleResource extends Resource
                             ->label('Image credit')
                             ->maxLength(255),
                         TextInput::make('video_url')
-                            ->label('Video URL')
+                            ->label('Video link')
                             ->url()
                             ->maxLength(2048),
                     ])
@@ -400,6 +410,38 @@ class ArticleResource extends Resource
             'create' => Pages\CreateArticle::route('/create'),
             'edit' => Pages\EditArticle::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public static function attachUploadedFeaturedPhoto(array $data): array
+    {
+        $file = $data['featured_media_upload'] ?? null;
+        unset($data['featured_media_upload']);
+
+        if (! $file) {
+            return $data;
+        }
+
+        if (is_array($file)) {
+            $file = reset($file);
+        }
+
+        if (! $file || ! Auth::user()) {
+            return $data;
+        }
+
+        $media = app(MediaLibraryService::class)->storeUploadedImage(Auth::user(), $file, [
+            'alt_text' => $data['headline_bn'] ?? null,
+            'caption' => $data['image_caption'] ?? null,
+            'credit' => $data['image_credit'] ?? null,
+        ]);
+
+        $data['featured_media_id'] = $media->getKey();
+
+        return $data;
     }
 
     private static function submitAction(): Action

@@ -4,27 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Services\ArticleMetricsService;
-use App\Services\PublicContentCache;
 use App\Services\SeoMetadataService;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Cache;
 
 class PublicArticleController extends Controller
 {
-    public function show(string $slug, SeoMetadataService $seo, PublicContentCache $publicCache, ArticleMetricsService $metrics): View
+    public function show(string $slug, SeoMetadataService $seo, ArticleMetricsService $metrics): View
     {
-        $article = Cache::remember($publicCache->articleKey($slug), $publicCache->ttl(), fn (): Article => Article::query()
-            ->with([
-                'primaryCategory',
-                'authors',
-                'tags',
-                'topics',
-                'featuredMedia',
-                'socialMedia',
-            ])
-            ->publiclyVisible()
-            ->where('slug', $slug)
-            ->firstOrFail());
+        $article = $this->findArticle($slug);
 
         $metrics->trackView($article);
 
@@ -40,5 +27,21 @@ class PublicArticleController extends Controller
                 ]))),
             ],
         ]);
+    }
+
+    private function findArticle(string $slug): Article
+    {
+        return Article::query()
+            ->with([
+                'primaryCategory',
+                'authors',
+                'tags',
+                'topics',
+                'featuredMedia',
+                'socialMedia',
+            ])
+            ->publiclyVisible()
+            ->where('slug', $slug)
+            ->firstOrFail();
     }
 }

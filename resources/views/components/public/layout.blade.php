@@ -17,8 +17,10 @@
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-title" content="Somoy Bayanno">
+        <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+        <link rel="shortcut icon" href="{{ asset('favicon.png') }}">
         <link rel="manifest" href="{{ asset('site.webmanifest') }}">
-        <link rel="apple-touch-icon" href="{{ asset('icons/icon-192.svg') }}">
+        <link rel="apple-touch-icon" href="{{ asset('icons/apple-touch-icon.png') }}">
         @if (config('analytics.google_search_console_verification'))
             <meta name="google-site-verification" content="{{ config('analytics.google_search_console_verification') }}">
         @endif
@@ -73,7 +75,7 @@
             <x-public.header />
             <x-public.breaking-ticker />
 
-            <main id="main-content" class="public-container py-6 sm:py-8">
+            <main id="main-content" class="public-container py-4 sm:py-5">
                 {{ $slot }}
             </main>
 

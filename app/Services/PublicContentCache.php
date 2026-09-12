@@ -43,7 +43,7 @@ class PublicContentCache
         }
     }
 
-    /** @return array<int, array{label: string, url: string}> */
+    /** @return array<int, array{label: string, url: string, children?: array<int, array{label: string, url: string}>}> */
     public function navigationItems(): array
     {
         return Cache::remember($this->key('navigation'), $this->ttl(), function (): array {
@@ -52,25 +52,49 @@ class PublicContentCache
             }
 
             $categories = Category::query()
+                ->with(['children' => function ($query): void {
+                    $query
+                        ->where('status', 'active')
+                        ->where('show_in_menu', true)
+                        ->orderBy('sort_order')
+                        ->orderBy('name_bn');
+                }])
+                ->whereNull('parent_id')
                 ->where('status', 'active')
                 ->where('show_in_menu', true)
                 ->orderBy('sort_order')
                 ->orderBy('name_bn')
-                ->limit(12)
-                ->get(['name_bn', 'slug']);
+                ->get(['id', 'name_bn', 'slug']);
 
             if ($categories->isEmpty()) {
                 return $this->fallbackNavigationItems();
             }
 
-            return $categories
-                ->map(fn (Category $category): array => [
+            $items = [
+                ['label' => 'সর্বশেষ', 'url' => route('home')],
+                ['label' => 'Live', 'url' => route('static.show', 'live')],
+            ];
+
+            foreach ($categories as $category) {
+                $items[] = [
                     'label' => $category->name_bn,
-                    'url' => route('home', ['category' => $category->slug]),
-                ])
-                ->prepend(['label' => 'সর্বশেষ', 'url' => route('home')])
-                ->values()
-                ->all();
+                    'url' => route('static.show', $category->slug),
+                    'children' => $category->children
+                        ->map(fn (Category $child): array => [
+                            'label' => $child->name_bn,
+                            'url' => route('static.show', $child->slug),
+                        ])
+                        ->values()
+                        ->all(),
+                ];
+            }
+
+            return array_values(array_merge($items, [
+                ['label' => 'ভিডিও', 'url' => route('static.show', 'videos')],
+                ['label' => 'ছবিঘর', 'url' => route('static.show', 'photos')],
+                ['label' => 'লেখক', 'url' => route('static.show', 'writers')],
+                ['label' => 'আরও', 'url' => route('static.show', 'more')],
+            ]));
         });
     }
 
@@ -133,19 +157,25 @@ class PublicContentCache
         return 'public:v'.$this->version().':'.$name;
     }
 
-    /** @return array<int, array{label: string, url: string}> */
+    /** @return array<int, array{label: string, url: string, children?: array<int, array{label: string, url: string}>}> */
     private function fallbackNavigationItems(): array
     {
         return [
             ['label' => 'সর্বশেষ', 'url' => route('home')],
-            ['label' => 'জাতীয়', 'url' => '#'],
-            ['label' => 'রাজনীতি', 'url' => '#'],
-            ['label' => 'অর্থনীতি', 'url' => '#'],
-            ['label' => 'বিশ্ব', 'url' => '#'],
-            ['label' => 'খেলা', 'url' => '#'],
-            ['label' => 'বিনোদন', 'url' => '#'],
-            ['label' => 'প্রযুক্তি', 'url' => '#'],
-            ['label' => 'ভিডিও', 'url' => '#'],
+            ['label' => 'Live', 'url' => route('static.show', 'live')],
+            ['label' => 'জাতীয়', 'url' => route('static.show', 'national')],
+            ['label' => 'রাজনীতি', 'url' => route('static.show', 'politics')],
+            ['label' => 'আন্তর্জাতিক', 'url' => route('static.show', 'international')],
+            ['label' => 'অর্থনীতি', 'url' => route('static.show', 'economy')],
+            ['label' => 'খেলা', 'url' => route('static.show', 'sports')],
+            ['label' => 'বিনোদন', 'url' => route('static.show', 'entertainment')],
+            ['label' => 'প্রযুক্তি', 'url' => route('static.show', 'technology')],
+            ['label' => 'জীবনযাপন', 'url' => route('static.show', 'lifestyle')],
+            ['label' => 'মতামত', 'url' => route('static.show', 'opinion')],
+            ['label' => 'ভিডিও', 'url' => route('static.show', 'videos')],
+            ['label' => 'ছবিঘর', 'url' => route('static.show', 'photos')],
+            ['label' => 'লেখক', 'url' => route('static.show', 'writers')],
+            ['label' => 'আরও', 'url' => route('static.show', 'more')],
         ];
     }
 }

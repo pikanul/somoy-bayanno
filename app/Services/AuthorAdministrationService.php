@@ -64,6 +64,11 @@ class AuthorAdministrationService
      */
     private function validatedAttributes(array $attributes, ?Author $author = null): array
     {
+        $attributes = array_merge([
+            'organization_level' => $author?->organization_level ?? 3,
+            'sort_order' => $author?->sort_order ?? 100,
+        ], $attributes);
+
         return Arr::only(Validator::make($attributes, [
             'user_id' => ['nullable', 'integer', Rule::exists('users', 'id')->whereNull('deleted_at')],
             'name_bn' => ['required', 'string', 'max:255'],
@@ -75,12 +80,15 @@ class AuthorAdministrationService
             'photo' => ['nullable', 'string', 'max:2048'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
+            'address' => ['nullable', 'string', 'max:255'],
             'facebook_url' => ['nullable', 'url', 'max:2048'],
             'x_url' => ['nullable', 'url', 'max:2048'],
             'linkedin_url' => ['nullable', 'url', 'max:2048'],
             'website_url' => ['nullable', 'url', 'max:2048'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
             'featured' => ['required', 'boolean'],
+            'organization_level' => ['required', 'integer', 'min:1', 'max:4'],
+            'sort_order' => ['required', 'integer', 'min:0', 'max:9999'],
             'seo_title' => ['nullable', 'string', 'max:255'],
             'seo_description' => ['nullable', 'string'],
         ])->validate(), [
@@ -94,12 +102,15 @@ class AuthorAdministrationService
             'photo',
             'email',
             'phone',
+            'address',
             'facebook_url',
             'x_url',
             'linkedin_url',
             'website_url',
             'status',
             'featured',
+            'organization_level',
+            'sort_order',
             'seo_title',
             'seo_description',
         ]);

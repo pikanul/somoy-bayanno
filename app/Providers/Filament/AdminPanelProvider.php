@@ -3,7 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Http\Middleware\EnsurePrivilegedTwoFactorAuthentication;
-use Filament\Auth\MultiFactor\App\AppAuthentication;
+use App\Support\Security\FilamentAppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -31,9 +31,13 @@ class AdminPanelProvider extends PanelProvider
             ->path('newsroom')
             ->login()
             ->profile()
+            ->brandLogo(asset('demo-home/logo.png'))
+            ->brandLogoHeight('3rem')
+            ->favicon(asset('favicon.png'))
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->multiFactorAuthentication(
                 providers: [
-                    AppAuthentication::make()
+                    FilamentAppAuthentication::make()
                         ->brandName(config('app.name'))
                         ->recoverable(),
                 ],
@@ -41,7 +45,7 @@ class AdminPanelProvider extends PanelProvider
             )
             ->multiFactorAuthenticationRequiredMiddlewareName(EnsurePrivilegedTwoFactorAuthentication::class)
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::hex('#067A3B'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')

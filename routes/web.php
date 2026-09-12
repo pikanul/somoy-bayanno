@@ -6,6 +6,7 @@ use App\Http\Controllers\PublicAuthorController;
 use App\Http\Controllers\PublicHomeController;
 use App\Http\Controllers\PublicSearchController;
 use App\Http\Controllers\PublicSeoController;
+use App\Http\Controllers\PublicStaticPageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/robots.txt', [PublicSeoController::class, 'robots'])
@@ -32,6 +33,10 @@ Route::get('/authors/{slug}', [PublicAuthorController::class, 'show'])
 Route::get('/search', PublicSearchController::class)
     ->middleware('throttle:search')
     ->name('search');
+
+Route::get('/pages/{slug}', [PublicStaticPageController::class, 'show'])
+    ->where('slug', '[A-Za-z0-9-]+')
+    ->name('static.show');
 
 Route::get('/archive', [PublicArchiveController::class, 'index'])
     ->name('archive.index');

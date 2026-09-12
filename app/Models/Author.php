@@ -23,12 +23,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'photo',
     'email',
     'phone',
+    'address',
     'facebook_url',
     'x_url',
     'linkedin_url',
     'website_url',
     'status',
     'featured',
+    'organization_level',
+    'sort_order',
     'seo_title',
     'seo_description',
 ])]
@@ -42,6 +45,8 @@ class Author extends Model
     {
         return [
             'featured' => 'boolean',
+            'organization_level' => 'integer',
+            'sort_order' => 'integer',
             'status' => AuthorStatus::class,
         ];
     }

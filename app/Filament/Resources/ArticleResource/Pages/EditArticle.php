@@ -20,6 +20,7 @@ class EditArticle extends EditRecord
         /** @var Article $record */
         $record = $this->getRecord();
 
+        $data['featured_media_upload'] = null;
         $data['category_ids'] = $record->categories()->pluck('categories.id')->all();
         $data['tag_ids'] = $record->tags()->pluck('tags.id')->all();
         $data['topic_ids'] = $record->topics()->pluck('topics.id')->all();
@@ -30,6 +31,8 @@ class EditArticle extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        $data = ArticleResource::attachUploadedFeaturedPhoto($data);
+
         return app(ArticleAdministrationService::class)->update(Auth::user(), $record, $data);
     }
 

@@ -8,6 +8,27 @@
 >
     @php
         $featuredImage = $article->featuredMedia?->url() ?? $article->featured_image_url;
+        $videoUrl = $article->video_url;
+        $videoEmbedUrl = null;
+        $isDirectVideo = false;
+
+        if ($videoUrl) {
+            $videoHost = strtolower((string) parse_url($videoUrl, PHP_URL_HOST));
+            $videoPath = trim((string) parse_url($videoUrl, PHP_URL_PATH), '/');
+            parse_str((string) parse_url($videoUrl, PHP_URL_QUERY), $videoQuery);
+
+            if (str_contains($videoHost, 'youtu.be') && $videoPath !== '') {
+                $videoId = explode('/', $videoPath)[0];
+                $videoEmbedUrl = 'https://www.youtube-nocookie.com/embed/'.preg_replace('/[^A-Za-z0-9_-]/', '', $videoId);
+            } elseif (str_contains($videoHost, 'youtube.com') && isset($videoQuery['v'])) {
+                $videoEmbedUrl = 'https://www.youtube-nocookie.com/embed/'.preg_replace('/[^A-Za-z0-9_-]/', '', (string) $videoQuery['v']);
+            } elseif (str_contains($videoHost, 'youtube.com') && str_starts_with($videoPath, 'embed/')) {
+                $videoEmbedUrl = $videoUrl;
+            } else {
+                $isDirectVideo = \Illuminate\Support\Str::endsWith(strtolower($videoPath), ['.mp4', '.m3u8', '.webm']);
+            }
+        }
+
         $shareUrl = route('articles.show', $article->slug);
         $shareText = $article->headline_bn;
         $body = preg_replace('/<(script|style)\b[^>]*>.*?<\/\1>/is', '', $article->body_bn) ?? '';
@@ -75,7 +96,7 @@
 
             @if ($featuredImage)
                 <figure class="mt-6">
-                    <img src="{{ $featuredImage }}" alt="{{ $article->featuredMedia?->alt_text ?: $article->headline_bn }}" loading="eager" width="760" height="428" class="aspect-[16/9] w-full object-cover">
+                    <img src="{{ $featuredImage }}" alt="{{ $article->featuredMedia?->alt_text ?: $article->headline_bn }}" loading="eager" width="760" height="428" class="aspect-[16/9] w-full bg-neutral-100 object-contain">
                     @if ($article->image_caption || $article->image_credit || $article->featuredMedia?->caption || $article->featuredMedia?->credit)
                         <figcaption class="mt-2 text-sm leading-6 text-neutral-600">
                             {{ $article->image_caption ?: $article->featuredMedia?->caption }}
@@ -85,6 +106,28 @@
                         </figcaption>
                     @endif
                 </figure>
+            @endif
+
+            @if ($videoUrl)
+                <section class="mt-6" aria-label="ভিডিও">
+                    @if ($videoEmbedUrl)
+                        <div class="aspect-video overflow-hidden bg-black">
+                            <iframe
+                                src="{{ $videoEmbedUrl }}?rel=0&playsinline=1"
+                                title="{{ $article->headline_bn }}"
+                                class="h-full w-full"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen
+                            ></iframe>
+                        </div>
+                    @elseif ($isDirectVideo)
+                        <video src="{{ $videoUrl }}" class="aspect-video w-full bg-black object-contain" controls playsinline></video>
+                    @else
+                        <a href="{{ $videoUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center rounded bg-brand-red px-4 py-2 text-sm font-bold text-white hover:bg-red-700">
+                            ভিডিও দেখুন
+                        </a>
+                    @endif
+                </section>
             @endif
 
             <div class="mt-6 flex flex-wrap items-center gap-3 border-y border-neutral-200 py-4" aria-label="সোশ্যাল শেয়ার">
@@ -131,7 +174,7 @@
                         @foreach ($article->authors as $author)
                             <div class="flex gap-4">
                                 @if ($author->photo)
-                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($author->photo) }}" alt="{{ $author->name_bn }}" loading="lazy" width="64" height="64" class="h-16 w-16 shrink-0 object-cover">
+                                    <img src="{{ \Illuminate\Support\Facades\Storage::url($author->photo) }}" alt="{{ $author->name_bn }}" loading="lazy" width="64" height="64" class="h-16 w-16 shrink-0 bg-neutral-100 object-contain">
                                 @endif
                                 <div>
                                     <h2 class="font-bold text-brand-dark"><a class="hover:text-brand-green" href="{{ route('authors.show', $author->slug) }}">{{ $author->name_bn }}</a></h2>

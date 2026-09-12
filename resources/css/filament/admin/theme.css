@@ -1,0 +1,183 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+:root {
+    --somoy-green: #067a3b;
+    --somoy-green-dark: #055f2f;
+    --somoy-green-soft: #eef8f1;
+    --somoy-red: #d71920;
+    --somoy-dark: #171717;
+    --somoy-light: #f7f7f7;
+}
+
+.fi-body {
+    background: var(--somoy-light);
+    color: var(--somoy-dark);
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: 'kern';
+}
+
+.fi-topbar,
+.fi-header,
+.fi-sidebar-header {
+    background: #ffffff;
+}
+
+.fi-topbar {
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+.fi-sidebar {
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+}
+
+.fi-sidebar-header {
+    border-bottom: 1px solid #edf2f0;
+}
+
+.fi-logo {
+    max-height: 3.25rem;
+    object-fit: contain;
+}
+
+.fi-sidebar-group-label {
+    color: #6b7280;
+    font-weight: 700;
+}
+
+.fi-sidebar-item-button {
+    border-radius: 0.65rem;
+    transition:
+        background-color 160ms ease,
+        color 160ms ease,
+        transform 160ms ease;
+}
+
+.fi-sidebar-item-button:hover {
+    background: var(--somoy-green-soft);
+    color: var(--somoy-green);
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-button,
+.fi-sidebar-item.fi-sidebar-item-active .fi-sidebar-item-button {
+    background: var(--somoy-green-soft);
+    color: var(--somoy-green);
+    font-weight: 700;
+    box-shadow: inset 4px 0 0 var(--somoy-green);
+}
+
+.fi-sidebar-item.fi-active svg,
+.fi-sidebar-item.fi-sidebar-item-active svg {
+    color: var(--somoy-green);
+}
+
+.fi-header-heading,
+.fi-modal-heading,
+.fi-section-header-heading {
+    color: var(--somoy-dark);
+    font-weight: 800;
+}
+
+.fi-section,
+.fi-wi,
+.fi-ta,
+.fi-fo-field-wrp,
+.fi-in-entry-wrp {
+    border-color: #e5e7eb;
+}
+
+.fi-section,
+.fi-wi,
+.fi-ta-ctn {
+    background: #ffffff;
+    border-radius: 0.85rem;
+    box-shadow: 0 8px 24px rgb(15 23 42 / 0.04);
+}
+
+.fi-btn-color-primary {
+    background: var(--somoy-green);
+}
+
+.fi-btn-color-primary:hover {
+    background: var(--somoy-green-dark);
+}
+
+.fi-btn-color-danger {
+    background: var(--somoy-red);
+}
+
+.fi-input,
+.fi-select-input,
+.fi-ta-search-field input,
+.fi-fo-rich-editor {
+    border-color: #d1d5db;
+    border-radius: 0.7rem;
+}
+
+.fi-input:focus,
+.fi-select-input:focus,
+.fi-ta-search-field input:focus {
+    border-color: var(--somoy-green);
+    box-shadow: 0 0 0 3px rgb(6 122 59 / 0.15);
+}
+
+.fi-ta-header-cell {
+    background: #f3faf5;
+    color: #374151;
+    font-weight: 700;
+}
+
+.fi-ta-row {
+    background: #ffffff;
+}
+
+.fi-ta-row:hover {
+    background: #f6fbf7;
+}
+
+.fi-badge-color-success {
+    color: var(--somoy-green);
+}
+
+.fi-badge-color-danger {
+    color: var(--somoy-red);
+}
+
+@media (prefers-color-scheme: dark) {
+    .fi-body {
+        background: #101412;
+        color: #f9fafb;
+    }
+
+    .fi-topbar,
+    .fi-header,
+    .fi-sidebar,
+    .fi-sidebar-header,
+    .fi-section,
+    .fi-wi,
+    .fi-ta-ctn {
+        background: #171c1a;
+        border-color: #28332e;
+    }
+
+    .fi-sidebar-item-button:hover,
+    .fi-sidebar-item.fi-active .fi-sidebar-item-button,
+    .fi-sidebar-item.fi-sidebar-item-active .fi-sidebar-item-button {
+        background: rgb(6 122 59 / 0.18);
+        color: #77d39b;
+    }
+
+    .fi-ta-header-cell {
+        background: #15211b;
+        color: #d1d5db;
+    }
+
+    .fi-ta-row {
+        background: #171c1a;
+    }
+
+    .fi-ta-row:hover {
+        background: #1d2923;
+    }
+}

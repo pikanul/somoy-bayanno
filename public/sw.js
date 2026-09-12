@@ -1,12 +1,12 @@
-const CACHE_VERSION = 'somoy-bayanno-v1';
+const CACHE_VERSION = 'somoy-bayanno-v2';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const OFFLINE_URL = '/offline.html';
 const STATIC_ASSETS = [
     OFFLINE_URL,
-    '/favicon.ico',
-    '/icons/icon-192.svg',
-    '/icons/icon-512.svg',
-    '/icons/maskable-icon.svg',
+    '/favicon.png',
+    '/icons/icon-192.png',
+    '/icons/icon-512.png',
+    '/icons/apple-touch-icon.png',
 ];
 
 self.addEventListener('install', (event) => {

@@ -34,6 +34,9 @@ class AuthorFactory extends Factory
             'website_url' => null,
             'status' => AuthorStatus::Active,
             'featured' => false,
+            'address' => fake()->optional()->city(),
+            'organization_level' => 3,
+            'sort_order' => 100,
             'seo_title' => fake()->optional()->sentence(4),
             'seo_description' => fake()->optional()->sentence(10),
         ];
