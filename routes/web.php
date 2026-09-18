@@ -34,6 +34,11 @@ Route::get('/search', PublicSearchController::class)
     ->middleware('throttle:search')
     ->name('search');
 
+Route::get('/pages/epaper/{date?}/{page?}', [PublicStaticPageController::class, 'epaper'])
+    ->where('date', '\d{4}-\d{2}-\d{2}')
+    ->where('page', '[1-8]')
+    ->name('epaper.show');
+
 Route::get('/pages/{slug}', [PublicStaticPageController::class, 'show'])
     ->where('slug', '[A-Za-z0-9-]+')
     ->name('static.show');

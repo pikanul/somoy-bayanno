@@ -111,6 +111,100 @@
                 window.setInterval(render, 1000);
             })();
         </script>
+    @elseif ($slug === 'epaper')
+        @php
+            $dateLabel = fn ($date): string => $date ? $date->locale('bn')->translatedFormat('d F Y') : '';
+            $selectedIndex = $selectedEpaper ? $epapers->search(fn ($epaper): bool => $epaper->is($selectedEpaper)) : false;
+            $selectedPageIndex = collect($issuePages ?? [])->search(fn (array $page): bool => (int) $page['page_number'] === (int) $selectedPageNumber);
+            $previousPage = $selectedPageIndex !== false ? collect($issuePages)->get($selectedPageIndex - 1) : null;
+            $nextPage = $selectedPageIndex !== false ? collect($issuePages)->get($selectedPageIndex + 1) : null;
+        @endphp
+
+        <section class="epaper-reader-shell">
+            <div class="epaper-reader-toolbar">
+                <div class="flex min-w-0 flex-wrap items-center gap-3">
+                    <a href="{{ route('home') }}" class="flex h-10 w-36 shrink-0 items-center justify-center sm:w-48" aria-label="দৈনিক সময় বায়ান্ন হোম">
+                        <img src="{{ $asset('logo') }}" alt="দৈনিক সময় বায়ান্ন" class="max-h-full max-w-full object-contain">
+                    </a>
+                    <span class="hidden h-8 w-px bg-neutral-200 sm:block"></span>
+                    <label class="sr-only" for="epaper-date">তারিখ নির্বাচন</label>
+                    <select id="epaper-date" class="h-10 rounded border border-neutral-300 bg-white px-3 text-sm font-bold text-neutral-800 shadow-sm outline-none focus:border-brand-green" onchange="if (this.value) window.location.href = this.value">
+                        @forelse ($epapers as $epaper)
+                            <option value="{{ route('epaper.show', $epaper->issue_date?->format('Y-m-d')) }}" @selected($selectedEpaper?->is($epaper))>
+                                {{ $dateLabel($epaper->issue_date) }}
+                            </option>
+                        @empty
+                            <option value="">তারিখ নেই</option>
+                        @endforelse
+                    </select>
+                    <label class="sr-only" for="epaper-edition">সংস্করণ নির্বাচন</label>
+                    <select id="epaper-edition" class="h-10 rounded border border-neutral-300 bg-white px-3 text-sm font-bold text-neutral-800 shadow-sm outline-none focus:border-brand-green">
+                        @foreach ($epapers->pluck('edition')->unique()->values() as $edition)
+                            <option @selected($selectedEpaper?->edition === $edition)>{{ $edition }} সংস্করণ</option>
+                        @endforeach
+                    </select>
+                    @if ($selectedEpaper && count($issuePages) > 1)
+                        <label class="sr-only" for="epaper-page">পৃষ্ঠা নির্বাচন</label>
+                        <select id="epaper-page" class="h-10 rounded border border-neutral-300 bg-white px-3 text-sm font-bold text-neutral-800 shadow-sm outline-none focus:border-brand-green" onchange="if (this.value) window.location.href = this.value">
+                            @foreach ($issuePages as $page)
+                                <option value="{{ route('epaper.show', [$selectedEpaper->issue_date?->format('Y-m-d'), $page['page_number']]) }}" @selected((int) $selectedPageNumber === (int) $page['page_number'])>
+                                    পৃষ্ঠা {{ $page['page_number'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
+                </div>
+
+                <div class="flex shrink-0 items-center gap-2">
+                    @if ($selectedPage['pdf_url'] ?? null)
+                        <a href="{{ $selectedPage['pdf_url'] }}" target="_blank" rel="noopener noreferrer" class="hidden min-h-10 items-center rounded bg-brand-red px-4 py-2 text-sm font-black text-white hover:bg-red-700 sm:inline-flex">PDF</a>
+                    @endif
+                    @if ($selectedPage['external_preview_url'] ?? null)
+                        <a href="{{ $selectedPage['external_preview_url'] }}" target="_blank" rel="noopener noreferrer" class="hidden min-h-10 items-center rounded bg-brand-green px-4 py-2 text-sm font-black text-white hover:bg-green-800 sm:inline-flex">লিংক</a>
+                    @endif
+                    <a href="{{ route('static.show', 'subscribe') }}" class="inline-flex min-h-10 items-center rounded bg-brand-red px-4 py-2 text-sm font-black text-white shadow-md shadow-red-700/20 hover:bg-red-700">Subscribe Now</a>
+                </div>
+            </div>
+
+            <div class="epaper-reader-stage">
+                @if ($selectedEpaper)
+                        @if ($selectedPage['scan_url'] ?? null)
+                            <img src="{{ $selectedPage['scan_url'] }}" alt="{{ $selectedEpaper->title_bn }} - পৃষ্ঠা {{ $selectedPageNumber }}" class="epaper-reader-image">
+                        @elseif ($selectedPage['external_image_url'] ?? null)
+                            <img src="{{ $selectedPage['external_image_url'] }}" alt="{{ $selectedEpaper->title_bn }} - পৃষ্ঠা {{ $selectedPageNumber }}" class="epaper-reader-image" onerror="this.hidden = true; this.nextElementSibling.hidden = false;">
+                            @if ($selectedPage['external_preview_url'] ?? null)
+                                <iframe hidden src="{{ $selectedPage['external_preview_url'] }}" title="{{ $selectedEpaper->title_bn }} - পৃষ্ঠা {{ $selectedPageNumber }}" class="epaper-reader-frame" allow="autoplay"></iframe>
+                            @endif
+                        @elseif ($selectedPage['external_preview_url'] ?? null)
+                            <iframe src="{{ $selectedPage['external_preview_url'] }}" title="{{ $selectedEpaper->title_bn }} - পৃষ্ঠা {{ $selectedPageNumber }}" class="epaper-reader-frame" allow="autoplay"></iframe>
+                        @else
+                            <div class="grid min-h-[70vh] place-items-center bg-white p-6 text-center">
+                                <div>
+                                    <p class="text-xl font-black">স্ক্যান করা পেজ এখনো আপলোড করা হয়নি</p>
+                                    <p class="mt-2 text-neutral-600">Admin → E-Papers থেকে image/PDF/link যোগ করুন।</p>
+                                </div>
+                            </div>
+                        @endif
+
+                    @if ($previousPage)
+                        <a href="{{ route('epaper.show', [$selectedEpaper->issue_date?->format('Y-m-d'), $previousPage['page_number']]) }}" class="epaper-page-turn epaper-page-turn-prev" aria-label="আগের পৃষ্ঠা">‹</a>
+                    @else
+                        <span class="epaper-page-turn epaper-page-turn-prev opacity-30" aria-hidden="true">‹</span>
+                    @endif
+
+                    @if ($nextPage)
+                        <a href="{{ route('epaper.show', [$selectedEpaper->issue_date?->format('Y-m-d'), $nextPage['page_number']]) }}" class="epaper-page-turn epaper-page-turn-next" aria-label="পরের পৃষ্ঠা">›</a>
+                    @else
+                        <span class="epaper-page-turn epaper-page-turn-next opacity-30" aria-hidden="true">›</span>
+                    @endif
+                @else
+                    <div class="mx-auto mt-8 max-w-xl rounded border border-dashed border-neutral-300 bg-white p-8 text-center text-neutral-600">
+                        <p class="text-xl font-black text-brand-dark">কোনো ই-পেপার পাওয়া যায়নি</p>
+                        <p class="mt-2">Admin → E-Papers থেকে তারিখ অনুযায়ী scan/PDF/link যোগ করলে এখানে দেখা যাবে।</p>
+                    </div>
+                @endif
+            </div>
+        </section>
     @elseif ($slug === 'correspondents')
         @php
             $photoUrl = fn ($member): string => $member->photo ? asset('storage/'.$member->photo) : $asset('leader');

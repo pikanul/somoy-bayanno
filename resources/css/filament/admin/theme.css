@@ -12,7 +12,7 @@
 .fi-body {
     background: var(--somoy-light);
     color: var(--somoy-dark);
-    font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Noto Sans Bengali', ui-sans-serif, system-ui, sans-serif;
     font-feature-settings: 'kern';
 }
 
@@ -142,6 +142,106 @@
 
 .fi-badge-color-danger {
     color: var(--somoy-red);
+}
+
+.epaper-pages-repeater {
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.85rem;
+    background: #ffffff;
+}
+
+.epaper-pages-repeater::before {
+    display: grid;
+    grid-template-columns: 5rem minmax(13rem, 1.1fr) minmax(16rem, 1.25fr) minmax(18rem, 1.65fr);
+    gap: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(180deg, #fbfdff, #f5f7fa);
+    padding: 0.85rem 1rem;
+    color: #111827;
+    content: '#  Page Title *  Page Image  Page Link (URL) *';
+    font-weight: 800;
+    white-space: pre;
+}
+
+.epaper-pages-repeater .fi-fo-repeater-items {
+    display: block;
+    counter-reset: epaper-page-row;
+}
+
+.epaper-pages-repeater .fi-fo-repeater-item {
+    counter-increment: epaper-page-row;
+    display: grid;
+    grid-template-columns: 5rem minmax(13rem, 1.1fr) minmax(16rem, 1.25fr) minmax(18rem, 1.65fr);
+    gap: 1rem;
+    align-items: center;
+    border: 0;
+    border-bottom: 1px solid #edf0f4;
+    border-radius: 0;
+    background: #ffffff;
+    padding: 0.75rem 1rem;
+    box-shadow: none;
+}
+
+.epaper-pages-repeater .fi-fo-repeater-item:last-child {
+    border-bottom: 0;
+}
+
+.epaper-pages-repeater .fi-fo-repeater-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.25rem;
+    border-radius: 0.55rem;
+    background: linear-gradient(180deg, #f8fafc, #e9edf2);
+}
+
+.epaper-pages-repeater .fi-fo-repeater-item-header-label {
+    color: #111827;
+    font-size: 0;
+    font-weight: 900;
+}
+
+.epaper-pages-repeater .fi-fo-repeater-item-header-label::after {
+    color: #111827;
+    content: counter(epaper-page-row);
+    font-size: 1rem;
+}
+
+.epaper-pages-repeater .fi-fo-repeater-item-content {
+    display: contents;
+}
+
+.epaper-pages-repeater .fi-fo-repeater-item-content > .fi-sc {
+    display: contents;
+}
+
+.epaper-pages-repeater .fi-fo-repeater-item-content .fi-sc-component:first-child {
+    display: none;
+}
+
+.epaper-pages-repeater .fi-fo-repeater-item-content .fi-sc-component {
+    min-width: 0;
+}
+
+.epaper-pages-repeater .fi-fo-file-upload .filepond--root {
+    min-height: 3.5rem;
+}
+
+.epaper-pages-repeater .fi-fo-file-upload .filepond--drop-label {
+    min-height: 3.5rem;
+}
+
+@media (max-width: 1100px) {
+    .epaper-pages-repeater::before,
+    .epaper-pages-repeater .fi-fo-repeater-item {
+        grid-template-columns: 4rem 1fr;
+    }
+
+    .epaper-pages-repeater::before {
+        content: '#  Page data';
+    }
 }
 
 @media (prefers-color-scheme: dark) {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Author;
+use App\Models\Epaper;
 use App\Models\Gallery;
 use App\Models\LiveStream;
 use App\Models\Video;
@@ -56,6 +57,8 @@ class PublicStaticPageController extends Controller
         $galleries = $slug === 'photos' ? $this->galleries() : collect();
         $correspondents = $slug === 'correspondents' ? $this->correspondents() : collect();
         $liveStream = $slug === 'live' ? $this->liveStream() : null;
+        $epapers = $slug === 'epaper' ? $this->epapers() : collect();
+        $selectedEpaper = $slug === 'epaper' ? $epapers->first() : null;
 
         return view('public.static.show', [
             'title' => $title,
@@ -65,10 +68,52 @@ class PublicStaticPageController extends Controller
             'galleries' => $galleries,
             'correspondents' => $correspondents,
             'liveStream' => $liveStream,
+            'epapers' => $epapers,
+            'selectedEpaper' => $selectedEpaper,
             'seo' => [
                 'title' => "{$title} - দৈনিক সময় বায়ান্ন",
                 'description' => "{$title} পাতার সংবাদ, ছবি ও ভিডিও।",
                 'canonical' => route('static.show', $slug),
+            ],
+            'jsonLd' => [],
+        ]);
+    }
+
+    public function epaper(?string $date = null, ?int $page = null): View
+    {
+        $epapers = $this->epapers();
+        $selectedEpaper = $date
+            ? $epapers->first(fn (Epaper $epaper): bool => $epaper->issue_date?->format('Y-m-d') === $date)
+            : $epapers->first();
+
+        abort_if($date && ! $selectedEpaper, 404);
+
+        $issuePages = $selectedEpaper?->readerPages() ?? [];
+        $selectedPageNumber = $page ?: 1;
+        $selectedPage = $selectedEpaper?->readerPage($selectedPageNumber) ?? ($issuePages[0] ?? null);
+        $selectedPageNumber = (int) ($selectedPage['page_number'] ?? 1);
+        $title = self::PAGE_TITLES['epaper'];
+        $description = $selectedEpaper
+            ? $selectedEpaper->issue_date?->format('d M Y').' সংখ্যার ই-পেপার পড়ুন।'
+            : 'দৈনিক সময় বায়ান্ন ই-পেপার পড়ুন।';
+
+        return view('public.static.show', [
+            'title' => $title,
+            'slug' => 'epaper',
+            'articles' => collect(),
+            'videos' => collect(),
+            'galleries' => collect(),
+            'correspondents' => collect(),
+            'liveStream' => null,
+            'epapers' => $epapers,
+            'selectedEpaper' => $selectedEpaper,
+            'issuePages' => $issuePages,
+            'selectedPage' => $selectedPage,
+            'selectedPageNumber' => $selectedPageNumber,
+            'seo' => [
+                'title' => "{$title} - দৈনিক সময় বায়ান্ন",
+                'description' => $description,
+                'canonical' => $selectedEpaper ? route('epaper.show', [$selectedEpaper->issue_date?->format('Y-m-d'), $selectedPageNumber]) : route('static.show', 'epaper'),
             ],
             'jsonLd' => [],
         ]);
@@ -95,6 +140,21 @@ class PublicStaticPageController extends Controller
             ->orderBy('sort_order')
             ->latest()
             ->first();
+    }
+
+    /** @return Collection<int, Epaper> */
+    private function epapers(): Collection
+    {
+        if (! Schema::hasTable('epapers')) {
+            return collect();
+        }
+
+        return Epaper::query()
+            ->published()
+            ->orderByDesc('issue_date')
+            ->orderBy('sort_order')
+            ->limit(60)
+            ->get();
     }
 
     /** @return Collection<int, Author> */

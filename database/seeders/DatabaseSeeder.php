@@ -19,5 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DemoNewsContentSeeder::class);
         $this->call(CorrespondentSeeder::class);
         $this->call(LiveStreamSeeder::class);
+        $this->call(EpaperSeeder::class);
     }
 }

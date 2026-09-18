@@ -137,7 +137,7 @@
                 <a class="inline-flex min-h-11 items-center border border-neutral-300 px-3 py-2 text-sm font-semibold hover:border-brand-green hover:text-brand-green" href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($shareUrl) }}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
             </div>
 
-            <div class="article-body mt-7 max-w-none text-[1.0625rem] leading-8 text-neutral-900 sm:text-lg sm:leading-9">
+            <div class="article-body mt-7 max-w-none text-neutral-900">
                 {!! $body !!}
             </div>
 

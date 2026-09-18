@@ -64,7 +64,7 @@
 
     <h1 class="sr-only">দৈনিক সময় বায়ান্ন - হোম পেজ</h1>
 
-    <section class="grid gap-3 lg:grid-cols-[minmax(0,1.05fr)_250px_236px]" aria-label="প্রধান সংবাদ">
+    <section class="grid gap-3 lg:grid-cols-[minmax(0,1.28fr)_minmax(250px,0.42fr)_minmax(260px,0.42fr)]" aria-label="প্রধান সংবাদ">
         <a href="{{ $leadUrl }}" class="group block overflow-hidden rounded border border-neutral-200 bg-white text-brand-dark">
             <div class="relative bg-white">
                 <img src="{{ $leadImage }}" alt="" loading="eager" class="aspect-[16/10] w-full bg-white object-contain">

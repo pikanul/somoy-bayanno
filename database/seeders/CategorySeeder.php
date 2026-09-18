@@ -10,9 +10,11 @@ class CategorySeeder extends Seeder
 {
     /** @var array<int, array{name_bn: string, slug: string}> */
     private array $categories = [
-        ['name_bn' => 'জাতীয়', 'slug' => 'national'],
+        ['name_bn' => 'বাংলাদেশ', 'slug' => 'national'],
         ['name_bn' => 'রাজনীতি', 'slug' => 'politics'],
         ['name_bn' => 'আন্তর্জাতিক', 'slug' => 'international'],
+        ['name_bn' => 'ফিচার', 'slug' => 'feature'],
+        ['name_bn' => 'সাক্ষাৎকার', 'slug' => 'interview'],
         ['name_bn' => 'অর্থনীতি', 'slug' => 'economy'],
         ['name_bn' => 'খেলা', 'slug' => 'sports'],
         ['name_bn' => 'বিনোদন', 'slug' => 'entertainment'],

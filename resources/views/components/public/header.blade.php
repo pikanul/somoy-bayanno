@@ -6,8 +6,6 @@
         ['label' => 'ক্যারিয়ার', 'url' => route('static.show', 'career')],
         ['label' => 'সাহায্য কেন্দ্র', 'url' => route('static.show', 'contact')],
     ];
-
-    $navItems = app(\App\Services\PublicContentCache::class)->navigationItems();
 @endphp
 
 <header class="site-header bg-white" x-data="{ menuOpen: false }" x-on:keydown.escape.window="menuOpen = false">
@@ -60,8 +58,6 @@
             <div class="hidden lg:block" aria-hidden="true"></div>
         </div>
     </div>
-
-    <x-public.navigation :items="$navItems" />
 
     <script>
         (() => {

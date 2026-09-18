@@ -50,7 +50,7 @@
             </script>
         @endforeach
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=noto-sans-bengali:400,500,600,700|hind-siliguri:400,500,600,700&display=swap" rel="stylesheet">
+        <link href="https://fonts.bunny.net/css?family=noto-sans-bengali:400,500,600,700|noto-serif-bengali:400,500,600,700&display=swap" rel="stylesheet">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @if (config('analytics.google_analytics_measurement_id'))
             <script async src="https://www.googletagmanager.com/gtag/js?id={{ urlencode(config('analytics.google_analytics_measurement_id')) }}"></script>
@@ -73,6 +73,7 @@
 
         <div class="min-h-screen">
             <x-public.header />
+            <x-public.navigation :items="app(\App\Services\PublicContentCache::class)->navigationItems()" />
             <x-public.breaking-ticker />
 
             <main id="main-content" class="public-container py-4 sm:py-5">

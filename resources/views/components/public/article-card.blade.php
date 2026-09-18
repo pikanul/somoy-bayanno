@@ -7,7 +7,7 @@
     'publishedAt' => null,
 ])
 
-<article class="group h-full overflow-hidden rounded border border-neutral-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+<article class="article-card group h-full overflow-hidden rounded border border-neutral-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
     <a href="{{ $url }}" class="block overflow-hidden">
         @if ($image)
             <img src="{{ $image }}" alt="" loading="lazy" class="aspect-[16/9] w-full bg-neutral-100 object-contain transition duration-300 group-hover:scale-105">
@@ -19,7 +19,7 @@
         @if ($category)
             <p class="text-xs font-bold tracking-normal text-brand-red">{{ $category }}</p>
         @endif
-        <h3 class="text-base font-bold leading-snug text-brand-dark group-hover:text-brand-green sm:text-lg">
+        <h3 class="news-headline text-base font-bold leading-snug text-brand-dark group-hover:text-brand-green sm:text-lg">
             <a href="{{ $url }}">{{ $title }}</a>
         </h3>
         @if ($summary)
