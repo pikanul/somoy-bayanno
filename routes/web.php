@@ -39,6 +39,25 @@ Route::get('/pages/epaper/{date?}/{page?}', [PublicStaticPageController::class, 
     ->where('page', '[1-8]')
     ->name('epaper.show');
 
+Route::post('/pages/{slug}', [PublicStaticPageController::class, 'storeAdvertisementInquiry'])
+    ->where('slug', 'advertise')
+    ->middleware('throttle:5,1')
+    ->name('static.advertise.store');
+
+Route::post('/pages/{slug}/message', [PublicStaticPageController::class, 'storeContactMessage'])
+    ->where('slug', 'contact')
+    ->middleware('throttle:5,1')
+    ->name('static.contact.store');
+
+Route::get('/pages/career/{vacancy}', [PublicStaticPageController::class, 'careerVacancy'])
+    ->where('vacancy', '[A-Za-z0-9-]+')
+    ->name('career.vacancies.show');
+
+Route::post('/pages/{slug}/apply', [PublicStaticPageController::class, 'storeCareerApplication'])
+    ->where('slug', 'career')
+    ->middleware('throttle:3,1')
+    ->name('static.career.apply');
+
 Route::get('/pages/{slug}', [PublicStaticPageController::class, 'show'])
     ->where('slug', '[A-Za-z0-9-]+')
     ->name('static.show');
